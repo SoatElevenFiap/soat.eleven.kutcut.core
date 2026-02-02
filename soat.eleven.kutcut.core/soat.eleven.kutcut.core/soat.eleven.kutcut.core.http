@@ -1,0 +1,6 @@
+@soat.eleven.kutcut.core_HostAddress = http://localhost:5185
+
+GET {{soat.eleven.kutcut.core_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
