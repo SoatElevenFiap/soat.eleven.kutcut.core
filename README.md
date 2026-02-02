@@ -2,16 +2,16 @@
 
 Microserviço central da plataforma **KutCut** - sistema de processamento de vídeos desenvolvido como projeto da Pós-Graduação em **Arquitetura de Software** da FIAP.
 
-## 📋 Sobre o Projeto
+## Sobre o Projeto
 
 O KutCut é uma plataforma que permite aos usuários fazer upload de vídeos para extrair imagens em frames. Este repositório contém o **Core API**, responsável por:
 
-- 📤 Upload de vídeos
-- 📋 Listagem de vídeos do usuário
-- 🔔 Notificações ao usuário
-- 📨 Comunicação via mensageria com outros serviços
+- Upload de vídeos
+- Listagem de vídeos do usuário
+- Notificações ao usuário
+- Comunicação via mensageria com outros serviços
 
-## 🏗️ Arquitetura
+## Arquitetura
 
 O sistema segue uma arquitetura de **microserviços** com comunicação assíncrona via mensageria:
 
@@ -36,7 +36,7 @@ O sistema segue uma arquitetura de **microserviços** com comunicação assíncr
 | **Core API** | Upload, listagem de vídeos e notificações |
 | **Video Worker** | Processamento dos vídeos e extração de frames |
 
-## 🛠️ Tecnologias
+## Tecnologias
 
 - **.NET 8** - Framework principal
 - **ASP.NET Core Web API** - APIs REST
@@ -44,7 +44,7 @@ O sistema segue uma arquitetura de **microserviços** com comunicação assíncr
 - **Swagger/OpenAPI** - Documentação da API
 - **Clean Architecture** - Organização do projeto
 
-## 📁 Estrutura do Projeto
+## Estrutura do Projeto
 
 ```
 ├── soat.eleven.kutcut.core/          # API Layer (Controllers, Endpoints)
@@ -53,7 +53,7 @@ O sistema segue uma arquitetura de **microserviços** com comunicação assíncr
 └── soat.eleven.kutcut.infra/         # Infrastructure Layer (Repositories, External Services)
 ```
 
-## 🚀 Como Executar
+## Como Executar
 
 ```bash
 # Restaurar dependências
@@ -65,7 +65,7 @@ dotnet run --project soat.eleven.kutcut.core
 
 A API estará disponível em `https://localhost:5001` com documentação Swagger em `/swagger`.
 
-## 👥 Equipe
+## Equipe
 
 Projeto desenvolvido pelo **Grupo 11** - SOAT - Pós-Graduação FIAP
 
