@@ -1,0 +1,17 @@
+﻿using Microsoft.Extensions.Hosting;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace soat.eleven.kutcut.application.NotificationService
+{
+    public class BackgroundNotificationService : BackgroundService
+    {
+        protected override Task ExecuteAsync(CancellationToken stoppingToken)
+        {
+            throw new NotImplementedException();
+        }
+    }
+}
