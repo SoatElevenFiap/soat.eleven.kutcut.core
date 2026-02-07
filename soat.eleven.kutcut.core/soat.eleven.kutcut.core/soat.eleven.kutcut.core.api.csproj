@@ -16,6 +16,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\soat.eleven.kutcut.infra\soat.eleven.kutcut.infra.csproj" />
+    <ProjectReference Include="..\soat.eleven.kutcut.application\soat.eleven.kutcut.application.csproj" />
   </ItemGroup>
 
 </Project>

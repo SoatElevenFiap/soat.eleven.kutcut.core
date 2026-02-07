@@ -1,12 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace soat.eleven.kutcut.infra.queues.Interfaces
+﻿namespace soat.eleven.kutcut.infra.queues.Interfaces
 {
     public interface IMessageListener
     {
+        void StartListening(string queueName, Func<string, Task> onMessageReceived);
+        void StopListening();
     }
 }
