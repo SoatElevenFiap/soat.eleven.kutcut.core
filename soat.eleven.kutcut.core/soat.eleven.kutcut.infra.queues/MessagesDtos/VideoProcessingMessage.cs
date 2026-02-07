@@ -1,6 +1,6 @@
 using soat.eleven.kutcut.domain.Enums;
 
-namespace soat.eleven.kutcut.domain.Dtos
+namespace soat.eleven.kutcut.infra.queues.MessagesDtos
 {
     public class VideoProcessingMessage
     {
