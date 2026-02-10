@@ -7,7 +7,12 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\soat.eleven.kutcut.core\soat.eleven.kutcut.core.api.csproj" />
+    <PackageReference Include="FluentResults" Version="3.16.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\soat.eleven.kutcut.domain\soat.eleven.kutcut.domain.csproj" />
+    <ProjectReference Include="..\soat.eleven.kutcut.infra\soat.eleven.kutcut.infra.csproj" />
   </ItemGroup>
 
 </Project>

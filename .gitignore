@@ -328,3 +328,6 @@ FodyWeavers.xsd
 # JetBrains Rider
 .idea/
 *.sln.iml
+
+# Storage local de vídeos/thumbnails
+soat.eleven.kutcut.core/soat.eleven.kutcut.core/Storage/
