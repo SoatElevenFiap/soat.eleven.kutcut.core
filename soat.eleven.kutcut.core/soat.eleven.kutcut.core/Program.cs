@@ -1,5 +1,8 @@
 using Microsoft.EntityFrameworkCore;
+using soat.eleven.kutcut.application.Interfaces;
 using soat.eleven.kutcut.application.NotificationService;
+using soat.eleven.kutcut.application.Processors;
+using soat.eleven.kutcut.application.Services;
 using soat.eleven.kutcut.domain.Notifications;
 using soat.eleven.kutcut.domain.Services;
 using soat.eleven.kutcut.infra.Configuration;
@@ -34,6 +37,10 @@ builder.Services.AddSingleton<IMessageListener, MessageListener>();
 // Domain Services
 builder.Services.AddScoped<IUserSerivce, HttpUserService>();
 builder.Services.AddScoped<IUserNotificaton, EmailNotificationService>();
+
+// Application Services
+builder.Services.AddScoped<IVideoMessageFactory, VideoMessageService>();
+builder.Services.AddScoped<IVideoNotificationProcessor, VideoNotificationProcessor>();
 
 // Background Services
 builder.Services.AddHostedService<BackgroundNotificationService>();
