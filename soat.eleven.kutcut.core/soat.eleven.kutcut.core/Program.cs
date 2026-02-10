@@ -55,32 +55,37 @@ builder.Services.AddControllers()
         options.JsonSerializerOptions.Converters.Add(new System.Text.Json.Serialization.JsonStringEnumConverter());
     });
 
+#region Background Service
+
 // === Swagger ===
 // Configuration Settings
-builder.Services.Configure<RabbitMQSettings>(
-    builder.Configuration.GetSection("RabbitMQ"));
-builder.Services.Configure<EmailSettings>(
-    builder.Configuration.GetSection("EmailSettings"));
-builder.Services.Configure<AuthServiceSettings>(
-    builder.Configuration.GetSection("AuthService"));
 
-// HTTP Client Factory
-builder.Services.AddHttpClient();
+//builder.Services.Configure<RabbitMQSettings>(
+//    builder.Configuration.GetSection("RabbitMQ"));
+//builder.Services.Configure<EmailSettings>(
+//    builder.Configuration.GetSection("EmailSettings"));
+//builder.Services.Configure<AuthServiceSettings>(
+//    builder.Configuration.GetSection("AuthService"));
 
-// RabbitMQ Services
-builder.Services.AddSingleton<RabbitMQConnectionFactory>();
-builder.Services.AddSingleton<IMessageListener, MessageListener>();
+//// HTTP Client Factory
+//builder.Services.AddHttpClient();
 
-// Domain Services
-builder.Services.AddSingleton<IUserSerivce, HttpUserService>();
-builder.Services.AddSingleton<IUserNotificaton, EmailNotificationService>();
+//// RabbitMQ Services
+//builder.Services.AddSingleton<RabbitMQConnectionFactory>();
+//builder.Services.AddSingleton<IMessageListener, MessageListener>();
 
-// Application Services
-builder.Services.AddSingleton<IVideoMessageFactory, VideoMessageService>();
-builder.Services.AddSingleton<IVideoNotificationProcessor, VideoNotificationProcessor>();
+//// Domain Services
+//builder.Services.AddSingleton<IUserSerivce, HttpUserService>();
+//builder.Services.AddSingleton<IUserNotificaton, EmailNotificationService>();
 
-// Background Services
-builder.Services.AddHostedService<BackgroundNotificationService>();
+//// Application Services
+//builder.Services.AddSingleton<IVideoMessageFactory, VideoMessageService>();
+//builder.Services.AddSingleton<IVideoNotificationProcessor, VideoNotificationProcessor>();
+
+//// Background Services
+//builder.Services.AddHostedService<BackgroundNotificationService>();
+
+#endregion
 
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
