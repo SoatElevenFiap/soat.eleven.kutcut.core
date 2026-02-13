@@ -1,7 +1,9 @@
+using soat.eleven.kutcut.infra.queues.MessagesDtos;
+
 namespace soat.eleven.kutcut.application.Interfaces
 {
     public interface IVideoNotificationProcessor
     {
-        Task ProcessVideoNotificationAsync(string message);
+        Task ProcessVideoNotificationAsync(VideoProcessingMessage message);
     }
 }

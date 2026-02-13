@@ -3,6 +3,7 @@ using soat.eleven.kutcut.application.Interfaces;
 using soat.eleven.kutcut.domain.Dtos;
 using soat.eleven.kutcut.domain.Notifications;
 using soat.eleven.kutcut.domain.Services;
+using soat.eleven.kutcut.infra.queues.MessagesDtos;
 
 namespace soat.eleven.kutcut.application.Processors
 {
@@ -25,11 +26,10 @@ namespace soat.eleven.kutcut.application.Processors
             _videoMessageFactory = videoMessageFactory;
         }
 
-        public async Task ProcessVideoNotificationAsync(string message)
+        public async Task ProcessVideoNotificationAsync(VideoProcessingMessage videoMessage)
         {
             try
             {
-                var videoMessage = _videoMessageFactory.DeserializeVideoMessage(message);
                 if (videoMessage == null)
                 {
                     _logger.LogError("Failed to deserialize video processing message");
