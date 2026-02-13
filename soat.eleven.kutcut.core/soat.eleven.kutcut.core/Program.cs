@@ -57,33 +57,31 @@ builder.Services.AddControllers()
 
 #region Background Service
 
-// === Swagger ===
-// Configuration Settings
 
-//builder.Services.Configure<RabbitMQSettings>(
-//    builder.Configuration.GetSection("RabbitMQ"));
-//builder.Services.Configure<EmailSettings>(
-//    builder.Configuration.GetSection("EmailSettings"));
-//builder.Services.Configure<AuthServiceSettings>(
-//    builder.Configuration.GetSection("AuthService"));
+builder.Services.Configure<RabbitMQSettings>(
+    builder.Configuration.GetSection("RabbitMQ"));
+builder.Services.Configure<EmailSettings>(
+    builder.Configuration.GetSection("EmailSettings"));
+builder.Services.Configure<AuthServiceSettings>(
+    builder.Configuration.GetSection("AuthService"));
 
-//// HTTP Client Factory
-//builder.Services.AddHttpClient();
+// HTTP Client Factory
+builder.Services.AddHttpClient();
 
-//// RabbitMQ Services
-//builder.Services.AddSingleton<RabbitMQConnectionFactory>();
-//builder.Services.AddSingleton<IMessageListener, MessageListener>();
+// RabbitMQ Services
+builder.Services.AddSingleton<RabbitMQConnectionFactory>();
+builder.Services.AddSingleton<IMessageListener, MessageListener>();
 
-//// Domain Services
-//builder.Services.AddSingleton<IUserSerivce, HttpUserService>();
-//builder.Services.AddSingleton<IUserNotificaton, EmailNotificationService>();
+// Domain Services
+builder.Services.AddSingleton<IUserSerivce, HttpUserService>();
+builder.Services.AddSingleton<IUserNotificaton, EmailNotificationService>();
 
-//// Application Services
-//builder.Services.AddSingleton<IVideoMessageFactory, VideoMessageService>();
-//builder.Services.AddSingleton<IVideoNotificationProcessor, VideoNotificationProcessor>();
+// Application Services
+builder.Services.AddSingleton<IVideoMessageFactory, VideoMessageService>();
+builder.Services.AddSingleton<IVideoNotificationProcessor, VideoNotificationProcessor>();
 
-//// Background Services
-//builder.Services.AddHostedService<BackgroundNotificationService>();
+// Background Services
+builder.Services.AddHostedService<BackgroundNotificationService>();
 
 #endregion
 
