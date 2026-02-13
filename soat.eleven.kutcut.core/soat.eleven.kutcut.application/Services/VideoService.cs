@@ -117,6 +117,26 @@ namespace soat.eleven.kutcut.application.Services
             return Result.Ok(MapToResult(model));
         }
 
+        public async Task<Result<VideoResult>> UpdateStatusAsync(Guid id, StatusEnum newStatus)
+        {
+            var model = await _repository.GetByIdAsync(id);
+            if (model is null)
+                return Result.Fail<VideoResult>("Vídeo não encontrado.");
+
+            var domainVideo = Video.Create(model.Title, model.UserId, model.Filename);
+            if (domainVideo.IsFailed)
+                return Result.Fail<VideoResult>(domainVideo.Errors);
+
+            domainVideo.Value.SetStatus(newStatus);
+
+            model.Status = (InfraStatusEnum)(int)newStatus;
+            model.UpdatedAt = DateTime.UtcNow;
+
+            await _repository.UpdateAsync(model);
+
+            return Result.Ok(MapToResult(model));
+        }
+
         public async Task<Result<Stream>> DownloadThumbnailsAsync(Guid id)
         {
             var model = await _repository.GetByIdAsync(id);

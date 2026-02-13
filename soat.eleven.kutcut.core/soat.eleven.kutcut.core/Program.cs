@@ -2,16 +2,27 @@ using Asp.Versioning;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
 using soat.eleven.kutcut.application.Interfaces;
+using soat.eleven.kutcut.application.NotificationService;
+using soat.eleven.kutcut.application.Processors;
 using soat.eleven.kutcut.application.Services;
 using soat.eleven.kutcut.core.api.Middlewares;
+using soat.eleven.kutcut.domain.Notifications;
+using soat.eleven.kutcut.domain.Services;
+using soat.eleven.kutcut.infra.Configuration;
 using soat.eleven.kutcut.infra.Context;
 using soat.eleven.kutcut.infra.Models;
+using soat.eleven.kutcut.infra.queues;
+using soat.eleven.kutcut.infra.queues.Interfaces;
 using soat.eleven.kutcut.infra.Repository;
+using soat.eleven.kutcut.infra.Services;
 using soat.eleven.kutcut.infra.Storage;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // === Database ===
+// Add services to the container.
+
+// Database Context
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
 
@@ -44,7 +55,38 @@ builder.Services.AddControllers()
         options.JsonSerializerOptions.Converters.Add(new System.Text.Json.Serialization.JsonStringEnumConverter());
     });
 
-// === Swagger ===
+#region Background Service
+
+
+builder.Services.Configure<RabbitMQSettings>(
+    builder.Configuration.GetSection("RabbitMQ"));
+builder.Services.Configure<EmailSettings>(
+    builder.Configuration.GetSection("EmailSettings"));
+builder.Services.Configure<AuthServiceSettings>(
+    builder.Configuration.GetSection("AuthService"));
+
+// HTTP Client Factory
+builder.Services.AddHttpClient();
+
+// RabbitMQ Services
+builder.Services.AddSingleton<RabbitMQConnectionFactory>();
+builder.Services.AddSingleton<IMessageListener, MessageListener>();
+
+// Domain Services
+builder.Services.AddSingleton<IUserSerivce, HttpUserService>();
+builder.Services.AddSingleton<IUserNotificaton, EmailNotificationService>();
+
+// Application Services
+builder.Services.AddSingleton<IVideoMessageFactory, VideoMessageService>();
+builder.Services.AddSingleton<IVideoNotificationProcessor, VideoNotificationProcessor>();
+
+// Background Services
+builder.Services.AddHostedService<BackgroundNotificationService>();
+
+#endregion
+
+builder.Services.AddControllers();
+// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(options =>
 {

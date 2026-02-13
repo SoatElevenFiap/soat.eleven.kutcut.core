@@ -13,6 +13,15 @@
   <ItemGroup>
     <ProjectReference Include="..\soat.eleven.kutcut.domain\soat.eleven.kutcut.domain.csproj" />
     <ProjectReference Include="..\soat.eleven.kutcut.infra\soat.eleven.kutcut.infra.csproj" />
+    <ProjectReference Include="..\soat.eleven.kutcut.domain\soat.eleven.kutcut.domain.csproj" />
+    <ProjectReference Include="..\soat.eleven.kutcut.infra.queues\soat.eleven.kutcut.infra.queues.csproj" />
+    <ProjectReference Include="..\soat.eleven.kutcut.infra\soat.eleven.kutcut.infra.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" Version="10.0.2" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="10.0.2" />
+    <PackageReference Include="Microsoft.Extensions.Options" Version="10.0.2" />
   </ItemGroup>
 
 </Project>
