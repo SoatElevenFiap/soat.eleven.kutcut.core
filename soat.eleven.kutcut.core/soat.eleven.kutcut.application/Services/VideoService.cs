@@ -1,6 +1,7 @@
 using FluentResults;
 using soat.eleven.kutcut.application.Dtos.Common;
 using soat.eleven.kutcut.application.Dtos.Video;
+using soat.eleven.kutcut.application.Exceptions;
 using soat.eleven.kutcut.application.Interfaces;
 using soat.eleven.kutcut.domain.Entities;
 using soat.eleven.kutcut.domain.Enums;
@@ -15,18 +16,24 @@ namespace soat.eleven.kutcut.application.Services
     {
         private readonly IRepository<VideoModel> _repository;
         private readonly IFileStorageService _fileStorage;
+        private readonly IUserContext _userContext;
 
-        public VideoService(IRepository<VideoModel> repository, IFileStorageService fileStorage)
+        public VideoService(
+            IRepository<VideoModel> repository,
+            IFileStorageService fileStorage,
+            IUserContext userContext)
         {
             _repository = repository;
             _fileStorage = fileStorage;
+            _userContext = userContext;
         }
 
         public async Task<Result<VideoResult>> CreateAsync(CreateVideoInput input)
         {
+            var userId = _userContext.UserId;
             var extension = Path.GetExtension(input.FileName);
 
-            var domainResult = Video.Create(input.Title, input.UserId, input.FileName);
+            var domainResult = Video.Create(input.Title, userId, input.FileName);
             if (domainResult.IsFailed)
                 return Result.Fail<VideoResult>(domainResult.Errors);
 
@@ -52,7 +59,13 @@ namespace soat.eleven.kutcut.application.Services
 
         public async Task<Result<PagedResult<VideoResult>>> GetAllAsync(int pageNumber, int pageSize)
         {
-            var (items, totalCount) = await _repository.GetPagedAsync(pageNumber, pageSize);
+            var userId = _userContext.UserId;
+
+            var (items, totalCount) = await _repository.GetPagedAsync(
+                pageNumber,
+                pageSize,
+                v => v.UserId == userId);
+
             var totalPages = (int)Math.Ceiling(totalCount / (double)pageSize);
 
             var result = new PagedResult<VideoResult>(
@@ -68,7 +81,7 @@ namespace soat.eleven.kutcut.application.Services
         public async Task<Result<VideoResult>> GetByIdAsync(Guid id)
         {
             var model = await _repository.GetByIdAsync(id);
-            if (model is null)
+            if (model is null || model.UserId != _userContext.UserId)
                 return Result.Fail<VideoResult>("Vídeo não encontrado.");
 
             return Result.Ok(MapToResult(model));
@@ -76,12 +89,13 @@ namespace soat.eleven.kutcut.application.Services
 
         public async Task<Result<PagedResult<VideoResult>>> GetByStatusAsync(StatusEnum status, int pageNumber, int pageSize)
         {
+            var userId = _userContext.UserId;
             var infraStatus = (InfraStatusEnum)(int)status;
 
             var (items, totalCount) = await _repository.GetPagedAsync(
                 pageNumber,
                 pageSize,
-                v => v.Status == infraStatus);
+                v => v.Status == infraStatus && v.UserId == userId);
 
             var totalPages = (int)Math.Ceiling(totalCount / (double)pageSize);
 
@@ -100,6 +114,9 @@ namespace soat.eleven.kutcut.application.Services
             var model = await _repository.GetByIdAsync(id);
             if (model is null)
                 return Result.Fail<VideoResult>("Vídeo não encontrado.");
+
+            if (model.UserId != _userContext.UserId)
+                throw new ForbiddenAccessException();
 
             var domainVideo = Video.Create(model.Title, model.UserId, model.Filename);
             if (domainVideo.IsFailed)
@@ -123,6 +140,9 @@ namespace soat.eleven.kutcut.application.Services
             if (model is null)
                 return Result.Fail<VideoResult>("Vídeo não encontrado.");
 
+            if (model.UserId != _userContext.UserId)
+                throw new ForbiddenAccessException();
+
             var domainVideo = Video.Create(model.Title, model.UserId, model.Filename);
             if (domainVideo.IsFailed)
                 return Result.Fail<VideoResult>(domainVideo.Errors);
@@ -142,6 +162,9 @@ namespace soat.eleven.kutcut.application.Services
             var model = await _repository.GetByIdAsync(id);
             if (model is null)
                 return Result.Fail<Stream>("Vídeo não encontrado.");
+
+            if (model.UserId != _userContext.UserId)
+                throw new ForbiddenAccessException();
 
             var stream = await _fileStorage.GetThumbnailZipAsync(model.UserId, model.Id);
             if (stream is null)
