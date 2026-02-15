@@ -58,8 +58,10 @@ builder.Services.AddScoped<IUserContext, UserContext>();
 
 // === Application Services ===
 builder.Services.AddScoped<IVideoService, VideoService>();
-builder.Services.AddSingleton<IFileStorageService>(
-    new LocalFileStorageService(builder.Environment.ContentRootPath));
+
+builder.Services.Configure<AzureBlobStorageSettings>(
+    builder.Configuration.GetSection("AzureBlobStorage"));
+builder.Services.AddSingleton<IFileStorageService, AzureBlobStorageService>();
 
 // === API Versioning ===
 builder.Services.AddApiVersioning(options =>
