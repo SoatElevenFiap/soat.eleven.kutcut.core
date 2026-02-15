@@ -29,6 +29,7 @@ namespace soat.eleven.kutcut.infra.Context
             // Seed Data - Status
             modelBuilder.Entity<StatusModel>().HasData(
                 new StatusModel { Id = StatusEnum.Pendente, Description = "Pendente" },
+                new StatusModel { Id = StatusEnum.Uploaded, Description = "Uploaded" },
                 new StatusModel { Id = StatusEnum.EmProcessamento, Description = "Em processamento" },
                 new StatusModel { Id = StatusEnum.ProcessadoComSucesso, Description = "Processado com sucesso" },
                 new StatusModel { Id = StatusEnum.ProcessadoComErro, Description = "Processado com erro" }

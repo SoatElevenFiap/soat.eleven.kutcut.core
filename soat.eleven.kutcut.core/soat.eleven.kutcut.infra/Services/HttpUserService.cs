@@ -31,7 +31,7 @@ namespace soat.eleven.kutcut.infra.Services
                 client.BaseAddress = new Uri(_settings.BaseUrl);
                 client.Timeout = TimeSpan.FromSeconds(_settings.TimeoutSeconds);
 
-                var response = client.GetAsync($"/api/users/{userId}").Result;
+                var response = client.GetAsync($"/api/User/{userId}").Result;
 
                 if (!response.IsSuccessStatusCode)
                 {

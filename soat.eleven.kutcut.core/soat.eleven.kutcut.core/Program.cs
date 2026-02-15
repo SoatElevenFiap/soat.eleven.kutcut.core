@@ -97,6 +97,7 @@ builder.Services.AddHttpClient();
 
 // RabbitMQ Services
 builder.Services.AddSingleton<RabbitMQConnectionFactory>();
+builder.Services.AddSingleton<IMessageSender, MessageSender>();
 builder.Services.AddSingleton<IMessageListener, MessageListener>();
 
 // Domain Services

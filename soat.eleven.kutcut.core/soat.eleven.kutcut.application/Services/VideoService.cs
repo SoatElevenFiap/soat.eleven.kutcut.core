@@ -1,11 +1,16 @@
 using FluentResults;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using soat.eleven.kutcut.application.Dtos.Common;
 using soat.eleven.kutcut.application.Dtos.Video;
 using soat.eleven.kutcut.application.Exceptions;
 using soat.eleven.kutcut.application.Interfaces;
 using soat.eleven.kutcut.domain.Entities;
 using soat.eleven.kutcut.domain.Enums;
+using soat.eleven.kutcut.infra.Configuration;
 using soat.eleven.kutcut.infra.Models;
+using soat.eleven.kutcut.infra.queues.Interfaces;
+using soat.eleven.kutcut.infra.queues.MessagesDtos;
 using soat.eleven.kutcut.infra.Repository;
 using soat.eleven.kutcut.infra.Storage;
 using InfraStatusEnum = soat.eleven.kutcut.infra.Models.Enums.StatusEnum;
@@ -17,19 +22,30 @@ namespace soat.eleven.kutcut.application.Services
         private readonly IRepository<VideoModel> _repository;
         private readonly IFileStorageService _fileStorage;
         private readonly IUserContext _userContext;
+        private readonly IMessageSender _messageSender;
+        private readonly RabbitMQSettings _rabbitMQSettings;
+        private readonly ILogger<VideoService> _logger;
 
         public VideoService(
             IRepository<VideoModel> repository,
             IFileStorageService fileStorage,
-            IUserContext userContext)
+            IUserContext userContext,
+            IMessageSender messageSender,
+            IOptions<RabbitMQSettings> rabbitMQSettings,
+            ILogger<VideoService> logger)
         {
             _repository = repository;
             _fileStorage = fileStorage;
             _userContext = userContext;
+            _messageSender = messageSender;
+            _rabbitMQSettings = rabbitMQSettings.Value;
+            _logger = logger;
         }
 
         public async Task<Result<VideoResult>> CreateAsync(CreateVideoInput input)
         {
+            EnsureAuthenticated();
+            
             var userId = _userContext.UserId;
             var extension = Path.GetExtension(input.FileName);
 
@@ -54,11 +70,15 @@ namespace soat.eleven.kutcut.application.Services
 
             await _repository.AddAsync(model);
 
+            await PublishVideoUploadedMessageAsync(video);
+
             return Result.Ok(MapToResult(model));
         }
 
         public async Task<Result<PagedResult<VideoResult>>> GetAllAsync(int pageNumber, int pageSize)
         {
+            EnsureAuthenticated();
+
             var userId = _userContext.UserId;
 
             var (items, totalCount) = await _repository.GetPagedAsync(
@@ -80,6 +100,8 @@ namespace soat.eleven.kutcut.application.Services
 
         public async Task<Result<VideoResult>> GetByIdAsync(Guid id)
         {
+            EnsureAuthenticated();
+
             var model = await _repository.GetByIdAsync(id);
             if (model is null || model.UserId != _userContext.UserId)
                 return Result.Fail<VideoResult>("Vídeo não encontrado.");
@@ -89,6 +111,8 @@ namespace soat.eleven.kutcut.application.Services
 
         public async Task<Result<PagedResult<VideoResult>>> GetByStatusAsync(StatusEnum status, int pageNumber, int pageSize)
         {
+            EnsureAuthenticated();
+
             var userId = _userContext.UserId;
             var infraStatus = (InfraStatusEnum)(int)status;
 
@@ -111,6 +135,8 @@ namespace soat.eleven.kutcut.application.Services
 
         public async Task<Result<VideoResult>> UpdateTitleAsync(Guid id, string? newTitle)
         {
+            EnsureAuthenticated();
+
             var model = await _repository.GetByIdAsync(id);
             if (model is null)
                 return Result.Fail<VideoResult>("Vídeo não encontrado.");
@@ -140,9 +166,6 @@ namespace soat.eleven.kutcut.application.Services
             if (model is null)
                 return Result.Fail<VideoResult>("Vídeo não encontrado.");
 
-            if (model.UserId != _userContext.UserId)
-                throw new ForbiddenAccessException();
-
             var domainVideo = Video.Create(model.Title, model.UserId, model.Filename);
             if (domainVideo.IsFailed)
                 return Result.Fail<VideoResult>(domainVideo.Errors);
@@ -159,6 +182,8 @@ namespace soat.eleven.kutcut.application.Services
 
         public async Task<Result<Stream>> DownloadThumbnailsAsync(Guid id)
         {
+            EnsureAuthenticated();
+
             var model = await _repository.GetByIdAsync(id);
             if (model is null)
                 return Result.Fail<Stream>("Vídeo não encontrado.");
@@ -186,6 +211,41 @@ namespace soat.eleven.kutcut.application.Services
                 domainStatus.ToString(),
                 model.CreatedAt ?? DateTime.MinValue,
                 model.UpdatedAt);
+        }
+
+        private async Task PublishVideoUploadedMessageAsync(Video video)
+        {
+            var message = new VideoUploadedMessage
+            {
+                UserId = video.UserId,
+                Filename = video.Filename,
+                Title = video.Title,
+                MessageId = Guid.NewGuid(),
+                Status = (int)video.Status
+            };
+
+            try
+            {
+                await _messageSender.SendMessage(
+                    _rabbitMQSettings.VideoUploadedQueueName,
+                    message);
+
+                _logger.LogInformation(
+                    "Mensagem de vídeo criado publicada com sucesso. VideoId: {VideoId}, MessageId: {MessageId}",
+                    video.Id, message.MessageId);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex,
+                    "Falha ao publicar mensagem de vídeo criado. VideoId: {VideoId}",
+                    video.Id);
+            }
+        }
+
+        private void EnsureAuthenticated()
+        {
+            if (!_userContext.IsAuthenticated)
+                throw new UnauthorizedAccessException("Usuário não autenticado.");
         }
     }
 }
