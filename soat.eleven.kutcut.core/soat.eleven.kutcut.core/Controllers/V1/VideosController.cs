@@ -1,4 +1,5 @@
 using Asp.Versioning;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using soat.eleven.kutcut.application.Dtos.Video;
 using soat.eleven.kutcut.application.Interfaces;
@@ -10,6 +11,7 @@ namespace soat.eleven.kutcut.core.api.Controllers.V1
 {
     [ApiController]
     [ApiVersion("1.0")]
+    [Authorize]
     [Route("api/v{version:apiVersion}/[controller]")]
     public class VideosController : ControllerBase
     {
@@ -32,7 +34,6 @@ namespace soat.eleven.kutcut.core.api.Controllers.V1
 
             var input = new CreateVideoInput(
                 request.Title,
-                request.UserId,
                 file.FileName,
                 stream);
 

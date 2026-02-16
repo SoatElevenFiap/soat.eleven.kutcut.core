@@ -1,6 +1,7 @@
 using Asp.Versioning;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using soat.eleven.kutcut.application.Interfaces;
 using soat.eleven.kutcut.application.NotificationService;
 using soat.eleven.kutcut.application.Processors;
@@ -16,6 +17,9 @@ using soat.eleven.kutcut.infra.queues.Interfaces;
 using soat.eleven.kutcut.infra.Repository;
 using soat.eleven.kutcut.infra.Services;
 using soat.eleven.kutcut.infra.Storage;
+using soat.eleven.kutcut.core.api.Security;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -24,15 +28,40 @@ var builder = WebApplication.CreateBuilder(args);
 
 // Database Context
 builder.Services.AddDbContext<AppDbContext>(options =>
-    options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
+    options.UseNpgsql(builder.Configuration.GetConnectionString("PostgresConnectionString")));
+
+// === Authentication ===
+builder.Services.AddAuthentication(option =>
+{
+    option.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+    option.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+})
+    .AddJwtBearer(option =>
+    {
+        option.RequireHttpsMetadata = false;
+        option.SaveToken = true;
+        option.TokenValidationParameters = new TokenValidationParameters
+        {
+            ValidateIssuerSigningKey = true,
+            IssuerSigningKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(builder.Configuration["JwtSettings:SecretKey"]!)),
+            ValidateIssuer = false,
+            ValidateAudience = false
+        };
+    });
 
 // === Repositories ===
 builder.Services.AddScoped<IRepository<VideoModel>, Repository<VideoModel>>();
 
+// === User Context ===
+builder.Services.AddHttpContextAccessor();
+builder.Services.AddScoped<IUserContext, UserContext>();
+
 // === Application Services ===
 builder.Services.AddScoped<IVideoService, VideoService>();
-builder.Services.AddSingleton<IFileStorageService>(
-    new LocalFileStorageService(builder.Environment.ContentRootPath));
+
+builder.Services.Configure<AzureBlobStorageSettings>(
+    builder.Configuration.GetSection("AzureBlobStorage"));
+builder.Services.AddSingleton<IFileStorageService, AzureBlobStorageService>();
 
 // === API Versioning ===
 builder.Services.AddApiVersioning(options =>
@@ -70,6 +99,7 @@ builder.Services.AddHttpClient();
 
 // RabbitMQ Services
 builder.Services.AddSingleton<RabbitMQConnectionFactory>();
+builder.Services.AddSingleton<IMessageSender, MessageSender>();
 builder.Services.AddSingleton<IMessageListener, MessageListener>();
 
 // Domain Services
@@ -140,6 +170,7 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
+app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();

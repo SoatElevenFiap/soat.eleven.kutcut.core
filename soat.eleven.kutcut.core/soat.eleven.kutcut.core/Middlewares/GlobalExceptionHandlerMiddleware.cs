@@ -1,6 +1,7 @@
 using System.Net;
 using System.Text.Json;
 using Microsoft.AspNetCore.Mvc;
+using soat.eleven.kutcut.application.Exceptions;
 
 namespace soat.eleven.kutcut.core.api.Middlewares
 {
@@ -21,22 +22,36 @@ namespace soat.eleven.kutcut.core.api.Middlewares
             {
                 await _next(context);
             }
+            catch (UnauthorizedAccessException ex)
+            {
+                _logger.LogWarning(ex, "Acesso não autorizado: {Message}", ex.Message);
+                await HandleExceptionAsync(context, ex, HttpStatusCode.Unauthorized, "Não autorizado");
+            }
+            catch (ForbiddenAccessException ex)
+            {
+                _logger.LogWarning(ex, "Acesso proibido: {Message}", ex.Message);
+                await HandleExceptionAsync(context, ex, HttpStatusCode.Forbidden, "Acesso negado");
+            }
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Erro não tratado: {Message}", ex.Message);
-                await HandleExceptionAsync(context, ex);
+                await HandleExceptionAsync(context, ex, HttpStatusCode.InternalServerError, "Erro interno do servidor");
             }
         }
 
-        private static async Task HandleExceptionAsync(HttpContext context, Exception exception)
+        private static async Task HandleExceptionAsync(
+            HttpContext context,
+            Exception exception,
+            HttpStatusCode statusCode,
+            string title)
         {
             context.Response.ContentType = "application/problem+json";
-            context.Response.StatusCode = (int)HttpStatusCode.InternalServerError;
+            context.Response.StatusCode = (int)statusCode;
 
             var problemDetails = new ProblemDetails
             {
                 Status = context.Response.StatusCode,
-                Title = "Erro interno do servidor",
+                Title = title,
                 Detail = exception.Message,
                 Instance = context.Request.Path
             };

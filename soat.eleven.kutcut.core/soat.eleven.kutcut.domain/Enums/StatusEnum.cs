@@ -5,7 +5,7 @@ namespace soat.eleven.kutcut.domain.Enums
         Pendente = 1,
         Uploaded = 2,
         EmProcessamento = 3,
-        ProcessadoComSucesso = 5,
-        ProcessadoComErro = 6
+        ProcessadoComSucesso = 4,
+        ProcessadoComErro = 5
     }
 }
