@@ -2,10 +2,12 @@
 using RabbitMQ.Client;
 using RabbitMQ.Client.Events;
 using soat.eleven.kutcut.infra.queues.Interfaces;
+using System.Diagnostics.CodeAnalysis;
 using System.Text;
 
 namespace soat.eleven.kutcut.infra.queues
 {
+    [ExcludeFromCodeCoverage(Justification = "Requires live RabbitMQ broker — covered by integration tests")]
     public class MessageListener : IMessageListener, IDisposable
     {
         private readonly ILogger<MessageListener> _logger;

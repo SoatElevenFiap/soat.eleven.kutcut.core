@@ -2,9 +2,11 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using RabbitMQ.Client;
 using soat.eleven.kutcut.infra.Configuration;
+using System.Diagnostics.CodeAnalysis;
 
 namespace soat.eleven.kutcut.infra.queues
 {
+    [ExcludeFromCodeCoverage(Justification = "Requires live RabbitMQ broker — covered by integration tests")]
     public class RabbitMQConnectionFactory : IDisposable
     {
         private readonly RabbitMQSettings _settings;

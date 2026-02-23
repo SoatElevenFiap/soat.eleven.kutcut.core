@@ -1,11 +1,13 @@
 using Microsoft.Extensions.Logging;
 using RabbitMQ.Client;
 using soat.eleven.kutcut.infra.queues.Interfaces;
+using System.Diagnostics.CodeAnalysis;
 using System.Text;
 using System.Text.Json;
 
 namespace soat.eleven.kutcut.infra.queues
 {
+    [ExcludeFromCodeCoverage(Justification = "Requires live RabbitMQ broker — covered by integration tests")]
     public class MessageSender : IMessageSender
     {
         private readonly ILogger<MessageSender> _logger;

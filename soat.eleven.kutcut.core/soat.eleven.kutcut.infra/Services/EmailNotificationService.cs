@@ -5,9 +5,11 @@ using MimeKit;
 using soat.eleven.kutcut.domain.Dtos;
 using soat.eleven.kutcut.domain.Notifications;
 using soat.eleven.kutcut.infra.Configuration;
+using System.Diagnostics.CodeAnalysis;
 
 namespace soat.eleven.kutcut.infra.Services
 {
+    [ExcludeFromCodeCoverage(Justification = "Requires live SMTP server — covered by integration tests")]
     public class EmailNotificationService : IUserNotificaton
     {
         private readonly EmailSettings _settings;

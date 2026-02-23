@@ -18,8 +18,16 @@ namespace soat.eleven.kutcut.application.Services
 
         public VideoProcessingMessage? DeserializeVideoMessage(string message)
         {
-            return JsonSerializer.Deserialize<VideoProcessingMessage>(message,
-                new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+            try
+            {
+                return JsonSerializer.Deserialize<VideoProcessingMessage>(message,
+                    new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+            }
+            catch (JsonException ex)
+            {
+                _logger.LogWarning(ex, "Failed to deserialize video processing message: {Message}", message);
+                return null;
+            }
         }
 
         public NotifyMessage? BuildNotificationMessage(VideoProcessingMessage videoMessage)
