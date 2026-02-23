@@ -1,0 +1,27 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "kutcut-api.configMapName" . }}
+  labels:
+    {{- include "kutcut-api.labels" . | nindent 4 }}
+data:
+  # ASP.NET Core environment
+  ASPNETCORE_ENVIRONMENT: {{ .Values.config.aspnetcoreEnvironment | quote }}
+
+  # RabbitMQ — non-sensitive (host, port, queue names)
+  RabbitMQ__HostName: {{ .Values.config.rabbitmq.hostName | quote }}
+  RabbitMQ__Port: {{ .Values.config.rabbitmq.port | quote }}
+  RabbitMQ__VideoProcessingQueueName: {{ .Values.config.rabbitmq.videoProcessingQueueName | quote }}
+  RabbitMQ__VideoUploadedQueueName: {{ .Values.config.rabbitmq.videoUploadedQueueName | quote }}
+
+  # Email — non-sensitive (server config, sender identity)
+  EmailSettings__SmtpServer: {{ .Values.config.emailSettings.smtpServer | quote }}
+  EmailSettings__Port: {{ .Values.config.emailSettings.port | quote }}
+  EmailSettings__FromEmail: {{ .Values.config.emailSettings.fromEmail | quote }}
+  EmailSettings__FromName: {{ .Values.config.emailSettings.fromName | quote }}
+
+  # Azure Blob Storage — non-sensitive (container name only)
+  AzureBlobStorage__ContainerName: {{ .Values.config.azureBlobStorage.containerName | quote }}
+
+  # Auth Service — non-sensitive (timeout)
+  AuthService__TimeoutSeconds: {{ .Values.config.authService.timeoutSeconds | quote }}

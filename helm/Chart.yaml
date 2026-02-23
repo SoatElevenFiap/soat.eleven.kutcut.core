@@ -1,0 +1,19 @@
+apiVersion: v2
+name: kutcut-api
+description: Helm chart for KutCut Core API - Video management platform
+type: application
+
+# Chart version — bump when the chart itself changes
+version: 0.1.0
+
+# Application version — should match the Docker image tag being deployed
+appVersion: "1.0.0"
+
+keywords:
+  - kutcut
+  - video
+  - api
+  - dotnet
+
+maintainers:
+  - name: KutCut Team

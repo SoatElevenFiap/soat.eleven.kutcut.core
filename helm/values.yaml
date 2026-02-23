@@ -1,0 +1,148 @@
+# ============================================================
+# KutCut API — Helm Values (Production)
+# ============================================================
+# Sensitive values (secret.*) are intentionally empty here.
+# Supply them at deploy time via --set or a values-prod.yaml
+# file that is NOT committed to version control.
+#
+# Example:
+#   helm upgrade --install kutcut-api ./helm \
+#     --set secret.postgresConnectionString="Host=..." \
+#     --set secret.jwtSecretKey="..." \
+#     ...
+# ============================================================
+
+replicaCount: 1
+
+image:
+  # Replace <ACR_NAME> with your Azure Container Registry name.
+  repository: <ACR_NAME>.azurecr.io/kutcut-api
+  tag: "latest"
+  pullPolicy: IfNotPresent
+
+imagePullSecrets: []
+
+nameOverride: ""
+fullnameOverride: ""
+
+serviceAccount:
+  create: false
+  name: ""
+
+# -----------------------------------------------
+# Service
+# -----------------------------------------------
+service:
+  type: ClusterIP
+  port: 80
+  targetPort: 8080
+
+# -----------------------------------------------
+# Ingress (NGINX)
+# -----------------------------------------------
+ingress:
+  enabled: true
+  className: "nginx"
+  annotations:
+    nginx.ingress.kubernetes.io/proxy-body-size: "500m"
+    nginx.ingress.kubernetes.io/proxy-read-timeout: "300"
+    nginx.ingress.kubernetes.io/proxy-send-timeout: "300"
+  hosts:
+    - host: kutcut.example.com        # <-- replace with real domain
+      paths:
+        - path: /
+          pathType: Prefix
+  tls:
+    - secretName: kutcut-tls          # <-- TLS cert secret (cert-manager or manual)
+      hosts:
+        - kutcut.example.com
+
+# -----------------------------------------------
+# Resource limits
+# -----------------------------------------------
+resources:
+  requests:
+    memory: "256Mi"
+    cpu: "100m"
+  limits:
+    memory: "512Mi"
+    cpu: "500m"
+
+# -----------------------------------------------
+# Horizontal Pod Autoscaler
+# -----------------------------------------------
+autoscaling:
+  enabled: false
+  minReplicas: 1
+  maxReplicas: 5
+  targetCPUUtilizationPercentage: 70
+
+# -----------------------------------------------
+# Liveness / Readiness probes
+# -----------------------------------------------
+livenessProbe:
+  httpGet:
+    path: /health
+    port: 8080
+  initialDelaySeconds: 30
+  periodSeconds: 15
+  failureThreshold: 3
+
+readinessProbe:
+  httpGet:
+    path: /health
+    port: 8080
+  initialDelaySeconds: 15
+  periodSeconds: 10
+  failureThreshold: 3
+
+# -----------------------------------------------
+# Non-sensitive configuration (ConfigMap)
+# These values are safe to commit.
+# -----------------------------------------------
+config:
+  aspnetcoreEnvironment: "Production"
+
+  rabbitmq:
+    hostName: "rabbitmq"               # K8s service name for RabbitMQ
+    port: "5672"
+    videoProcessingQueueName: "processamento_de_videos"
+    videoUploadedQueueName: "video_uploaded"
+
+  emailSettings:
+    smtpServer: "smtp.gmail.com"
+    port: "587"
+    fromEmail: "kutcut.videos@gmail.com"
+    fromName: "KutCut Platform"
+
+  azureBlobStorage:
+    containerName: "kutcut"
+
+  authService:
+    timeoutSeconds: "30"
+
+# -----------------------------------------------
+# Sensitive configuration (Secret)
+# Leave empty here — provide at deploy time.
+# -----------------------------------------------
+secret:
+  # PostgreSQL full connection string
+  # e.g.: "Host=<host>;Port=5432;Database=kutcut;Username=<user>;Password=<pass>"
+  postgresConnectionString: ""
+
+  # JWT symmetric secret key (min 32 chars)
+  jwtSecretKey: ""
+
+  # RabbitMQ credentials
+  rabbitmqUserName: ""
+  rabbitmqPassword: ""
+
+  # Gmail SMTP credentials
+  emailUserName: ""
+  emailPassword: ""
+
+  # Azure Blob Storage connection string
+  azureBlobConnectionString: ""
+
+  # Auth service base URL (external auth provider)
+  authServiceBaseUrl: ""

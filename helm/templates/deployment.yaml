@@ -1,0 +1,49 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "kutcut-api.fullname" . }}
+  labels:
+    {{- include "kutcut-api.labels" . | nindent 4 }}
+spec:
+  {{- if not .Values.autoscaling.enabled }}
+  replicas: {{ .Values.replicaCount }}
+  {{- end }}
+  selector:
+    matchLabels:
+      {{- include "kutcut-api.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      labels:
+        {{- include "kutcut-api.selectorLabels" . | nindent 8 }}
+    spec:
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      containers:
+        - name: {{ .Chart.Name }}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          ports:
+            - name: http
+              containerPort: 8080
+              protocol: TCP
+          # -------------------------------------------------------
+          # Configuration is injected via envFrom in two sources:
+          #   1. ConfigMap  — non-sensitive settings
+          #   2. Secret     — credentials and sensitive values
+          # Both map directly to ASP.NET Core's configuration keys
+          # using the __ double-underscore convention.
+          # -------------------------------------------------------
+          envFrom:
+            - configMapRef:
+                name: {{ include "kutcut-api.configMapName" . }}
+            - secretRef:
+                name: {{ include "kutcut-api.secretName" . }}
+          livenessProbe:
+            {{- toYaml .Values.livenessProbe | nindent 12 }}
+          readinessProbe:
+            {{- toYaml .Values.readinessProbe | nindent 12 }}
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}
+      terminationGracePeriodSeconds: 30
