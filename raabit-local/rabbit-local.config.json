@@ -1,0 +1,10 @@
+   {
+    "RabbitMQ": {
+    "HostName": "localhost",
+    "Port": 5672,
+    "UserName": "admin",
+    "Password": "admin123",
+    "VideoProcessingQueueName": "processamento_de_videos",
+    "VideoUploadedQueueName": "video_uploaded"
+  }
+  }

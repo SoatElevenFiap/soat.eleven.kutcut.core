@@ -49,15 +49,16 @@ namespace soat.eleven.kutcut.infra.Services
 
                 using (var client = new SmtpClient())
                 {
-                    client.Connect(_settings.SmtpServer, _settings.Port, _settings.UseSsl);
+                    client.Connect(_settings.SmtpServer, _settings.Port, MailKit.Security.SecureSocketOptions.StartTls);
+                    client.AuthenticationMechanisms.Remove("XOAUTH2");
                     client.Authenticate(_settings.UserName, _settings.Password);
                     client.Send(emailMessage);
                     client.Disconnect(true);
                 }
 
-                _logger.LogInformation("Email sent successfully to {Email} with subject: {Subject}", 
+                _logger.LogInformation("Email sent successfully to {Email} with subject: {Subject}",
                     user.Email, message.Title);
-                
+
                 return true;
             }
             catch (Exception ex)
