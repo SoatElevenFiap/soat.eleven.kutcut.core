@@ -37,7 +37,7 @@ namespace soat.eleven.kutcut.application.Services
                 StatusEnum.ProcessadoComSucesso => new NotifyMessage
                 {
                     Title = "Video Processing Completed Successfully",
-                    Body = $"Your video '{videoMessage.Title}' has been processed successfully and is now available on the platform."
+                    Body = $"Your video '{videoMessage.Title}' has been processed successfully and is now your images are available on the platform."
                 },
                 StatusEnum.ProcessadoComErro => new NotifyMessage
                 {
