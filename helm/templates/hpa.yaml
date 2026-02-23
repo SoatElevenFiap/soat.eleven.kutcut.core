@@ -1,15 +1,15 @@
-{{- if .Values.autoscaling.enabled }}
+﻿{{- if .Values.autoscaling.enabled }}
 apiVersion: autoscaling/v2
 kind: HorizontalPodAutoscaler
 metadata:
-  name: {{ include "kutcut-api.fullname" . }}
+  name: {{ .Release.Name }}
   labels:
-    {{- include "kutcut-api.labels" . | nindent 4 }}
+    app: {{ .Release.Name }}
 spec:
   scaleTargetRef:
     apiVersion: apps/v1
     kind: Deployment
-    name: {{ include "kutcut-api.fullname" . }}
+    name: {{ .Release.Name }}
   minReplicas: {{ .Values.autoscaling.minReplicas }}
   maxReplicas: {{ .Values.autoscaling.maxReplicas }}
   metrics:
