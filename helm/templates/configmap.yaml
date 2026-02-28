@@ -16,3 +16,6 @@ data:
   EmailSettings__FromName: {{ .Values.config.emailSettings.fromName | quote }}
   AzureBlobStorage__ContainerName: {{ .Values.config.azureBlobStorage.containerName | quote }}
   AuthService__TimeoutSeconds: {{ .Values.config.authService.timeoutSeconds | quote }}
+  POSTGRES_HOST: {{ .Values.config.postgres.host | quote }}
+  POSTGRES_DB: {{ .Values.config.postgres.db | quote }}
+  POSTGRES_PORT: {{ .Values.config.postgres.port | quote }}

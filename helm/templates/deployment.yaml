@@ -15,7 +15,11 @@ spec:
     metadata:
       labels:
         app: {{ .Release.Name }}
+        {{- if .Values.keyVault.enabled }}
+        azure.workload.identity/use: "true"
+        {{- end }}
     spec:
+      serviceAccountName: {{ .Release.Name }}
       imagePullSecrets:
         - name: acr-secret
       containers:
@@ -31,6 +35,12 @@ spec:
                 name: {{ .Release.Name }}-config
             - secretRef:
                 name: {{ .Release.Name }}-secret
+          volumeMounts:
+            {{- if .Values.keyVault.enabled }}
+            - name: secrets-store-inline
+              mountPath: "/mnt/secrets-store"
+              readOnly: true
+            {{- end }}
           livenessProbe:
             httpGet:
               path: /health
@@ -47,4 +57,13 @@ spec:
             failureThreshold: 3
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
+      volumes:
+        {{- if .Values.keyVault.enabled }}
+        - name: secrets-store-inline
+          csi:
+            driver: secrets-store.csi.k8s.io
+            readOnly: true
+            volumeAttributes:
+              secretProviderClass: {{ .Release.Name }}-kv
+        {{- end }}
       terminationGracePeriodSeconds: 30

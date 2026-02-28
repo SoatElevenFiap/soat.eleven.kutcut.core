@@ -56,6 +56,10 @@ config:
     containerName: "kutcut"
   authService:
     timeoutSeconds: "30"
+  postgres:
+    host: "postgres-host"
+    db: "kutcut"
+    port: "5432"
 
 # Sensitive configuration (Secret) — leave empty, set at deploy time
 secret:
@@ -67,3 +71,12 @@ secret:
   emailPassword: ""
   azureBlobConnectionString: ""
   authServiceBaseUrl: ""
+  postgresUser: ""
+  postgresPassword: ""
+
+# Key Vault Integration (Workload Identity)
+keyVault:
+  enabled: false
+  name: ""
+  tenantId: ""
+  clientId: "" # Managed Identity Client ID

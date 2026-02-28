@@ -1,0 +1,72 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: migrator-kutcut-{{ now | date "20060102-150405" }}
+  namespace: {{ .Release.Namespace }}
+  labels:
+    app: migrator-kutcut
+    release: {{ .Release.Name }}
+spec:
+  ttlSecondsAfterFinished: 300
+  backoffLimit: 3
+  template:
+    metadata:
+      labels:
+        app: migrator-kutcut
+        release: {{ .Release.Name }}
+    spec:
+      restartPolicy: OnFailure
+      imagePullSecrets: 
+        - name: acr-secret
+      initContainers:
+        - name: wait-for-db
+          image: busybox:1.36
+          command: ['sh', '-c', 'until nc -z {{ .Values.postgres.host }} 5432; do echo waiting for db; sleep 2; done;']
+      containers:
+        - name: migrator-kutcut
+          image: "{{ .Values.image.migratorRepository }}:{{ .Values.image.tag }}"
+          imagePullPolicy: IfNotPresent
+          env:
+            - name: POSTGRES_HOST
+              valueFrom:
+                configMapKeyRef:
+                  name: kutcut-config
+                  key: POSTGRES_HOST
+            - name: POSTGRES_DB_kutcut
+              valueFrom:
+                configMapKeyRef:
+                  name: kutcut-config
+                  key: POSTGRES_DB_kutcut
+            - name: POSTGRES_PORT
+              valueFrom:
+                configMapKeyRef:
+                  name: kutcut-config
+                  key: POSTGRES_PORT
+            - name: POSTGRES_USER
+              valueFrom:
+                secretKeyRef:
+                  name: db-credentials-kutcut
+                  key: POSTGRES_USER
+            - name: POSTGRES_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: db-credentials-kutcut
+                  key: POSTGRES_PASSWORD
+          command:
+            - sh
+            - -c
+            - |
+              echo "=== DEBUG: Variáveis de conexão ==="
+              echo "POSTGRES_HOST: $POSTGRES_HOST"
+              echo "POSTGRES_PORT: $POSTGRES_PORT"
+              echo "POSTGRES_DB_kutcut: $POSTGRES_DB_kutcut"
+              echo "POSTGRES_USER: $POSTGRES_USER"
+              echo "=== Connection String (mascarada) ==="
+              echo "Host=$POSTGRES_HOST;Port=$POSTGRES_PORT;Database=$POSTGRES_DB_kutcut;Username=$POSTGRES_USER;Password=[MASKED];SslMode=Require;TrustServerCertificate=true"
+              echo "=== Iniciando Migration ==="
+              # Ajustado para os novos caminhos do projeto
+              dotnet ef database update \
+                --connection "Host=$POSTGRES_HOST;Port=$POSTGRES_PORT;Database=$POSTGRES_DB_kutcut;Username=$POSTGRES_USER;Password=$POSTGRES_PASSWORD;SslMode=Require;TrustServerCertificate=true" \
+                --project soat.eleven.kutcut.core/soat.eleven.kutcut.infra/soat.eleven.kutcut.infra.csproj \
+                --startup-project soat.eleven.kutcut.core/soat.eleven.kutcut.core/soat.eleven.kutcut.core.api.csproj             
+            
