@@ -1,0 +1,18 @@
+﻿apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ .Release.Name }}-config
+  labels:
+    app: {{ .Release.Name }}
+data:
+  ASPNETCORE_ENVIRONMENT: {{ .Values.config.aspnetcoreEnvironment | quote }}
+  RabbitMQ__HostName: {{ .Values.config.rabbitmq.hostName | quote }}
+  RabbitMQ__Port: {{ .Values.config.rabbitmq.port | quote }}
+  RabbitMQ__VideoProcessingQueueName: {{ .Values.config.rabbitmq.videoProcessingQueueName | quote }}
+  RabbitMQ__VideoUploadedQueueName: {{ .Values.config.rabbitmq.videoUploadedQueueName | quote }}
+  EmailSettings__SmtpServer: {{ .Values.config.emailSettings.smtpServer | quote }}
+  EmailSettings__Port: {{ .Values.config.emailSettings.port | quote }}
+  EmailSettings__FromEmail: {{ .Values.config.emailSettings.fromEmail | quote }}
+  EmailSettings__FromName: {{ .Values.config.emailSettings.fromName | quote }}
+  AzureBlobStorage__ContainerName: {{ .Values.config.azureBlobStorage.containerName | quote }}
+  AuthService__TimeoutSeconds: {{ .Values.config.authService.timeoutSeconds | quote }}

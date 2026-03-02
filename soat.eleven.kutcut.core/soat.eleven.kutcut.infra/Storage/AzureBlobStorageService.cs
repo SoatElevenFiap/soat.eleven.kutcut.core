@@ -2,9 +2,11 @@ using Azure.Storage.Blobs;
 using Azure.Storage.Blobs.Models;
 using Microsoft.Extensions.Options;
 using soat.eleven.kutcut.infra.Configuration;
+using System.Diagnostics.CodeAnalysis;
 
 namespace soat.eleven.kutcut.infra.Storage
 {
+    [ExcludeFromCodeCoverage(Justification = "Requires live Azure Blob Storage — covered by integration tests")]
     public class AzureBlobStorageService : IFileStorageService
     {
         private readonly BlobServiceClient _blobServiceClient;
