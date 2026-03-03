@@ -13,7 +13,8 @@ O KutCut é uma plataforma que permite aos usuários fazer upload de vídeos par
 
 ## Arquitetura
 
-<img width="1593" height="1132" alt="image" src="https://github.com/user-attachments/assets/74f4c530-697d-4fd7-a4e0-4be1a0970d27" />
+<img width="1565" height="1070" alt="image" src="https://github.com/user-attachments/assets/09a4999a-5a65-42e2-b61c-0a708497e386" />
+
 
 ### Serviços Relacionados
 
