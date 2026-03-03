@@ -13,20 +13,7 @@ O KutCut é uma plataforma que permite aos usuários fazer upload de vídeos par
 
 ## Arquitetura
 
-O sistema segue uma arquitetura de **microserviços** com comunicação assíncrona via mensageria:
-
-```
-┌─────────────────┐     ┌─────────────────┐     ┌─────────────────┐
-│   Auth Service  │     │   Core API      │     │  Video Worker   │
-│  (Autenticação) │     │  (Este Repo)    │     │ (Processamento) │
-└────────┬────────┘     └────────┬────────┘     └────────┬────────┘
-         │                       │                       │
-         └───────────────────────┼───────────────────────┘
-                                 │
-                          ┌──────┴──────┐
-                          │  RabbitMQ   │
-                          └─────────────┘
-```
+<img width="1593" height="1132" alt="image" src="https://github.com/user-attachments/assets/74f4c530-697d-4fd7-a4e0-4be1a0970d27" />
 
 ### Serviços Relacionados
 
@@ -66,19 +53,18 @@ dotnet run --project soat.eleven.kutcut.core
 A API estará disponível em `https://localhost:5001` com documentação Swagger em `/swagger`.
 
 
-Diagrama Final da Solução
-<img width="1593" height="1132" alt="image" src="https://github.com/user-attachments/assets/74f4c530-697d-4fd7-a4e0-4be1a0970d27" />
+
 
 
 ## Equipe
 
 Projeto desenvolvido pelo **Grupo 11** - SOAT - Pós-Graduação FIAP
 
-Adriano Ricardo Felippe Torini 
-André Luiz
-Dhyogo Siqueira
-Filipe Braga
-Kauan Kajitani 
+-**Adriano Ricardo Felippe Torini** 
+-**André Luiz**
+-**Dhyogo Siqueira**
+-**Filipe Braga**
+-**Kauan Kajitani** 
 
 ---
 *Tech Challenge - Arquitetura de Software - FIAP 2025/2026*
