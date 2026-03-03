@@ -215,12 +215,15 @@ namespace soat.eleven.kutcut.application.Services
 
         private async Task PublishVideoUploadedMessageAsync(Video video)
         {
+            var extension = Path.GetExtension(video.Filename);
+            var videoInternalName = $"{video.Id}{extension}";
+
             var message = new VideoUploadedMessage
             {
                 UserId = video.UserId,
-                Filename = video.Filename,
+                Filename = videoInternalName,
                 Title = video.Title,
-                MessageId = Guid.NewGuid(),
+                MessageId = video.Id,
                 Status = (int)video.Status
             };
 
