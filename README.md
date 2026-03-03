@@ -60,11 +60,11 @@ A API estará disponível em `https://localhost:5001` com documentação Swagger
 
 Projeto desenvolvido pelo **Grupo 11** - SOAT - Pós-Graduação FIAP
 
--**Adriano Ricardo Felippe Torini** 
--**André Luiz**
--**Dhyogo Siqueira**
--**Filipe Braga**
--**Kauan Kajitani** 
+- **Adriano Ricardo Felippe Torini** 
+- **André Luiz**
+- **Dhyogo Siqueira**
+- **Filipe Braga**
+- **Kauan Kajitani** 
 
 ---
 *Tech Challenge - Arquitetura de Software - FIAP 2025/2026*
