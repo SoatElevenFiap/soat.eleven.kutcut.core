@@ -9,8 +9,9 @@
 replicaCount: 1
 
 image:
-  repository: <ACR_NAME>.azurecr.io/kutcut-api
-  tag: "latest"
+  repository: acrkutcutpostech.azurecr.io/kutcut-api
+  tag: latest
+  migratorTag: latest-migrator
   pullPolicy: IfNotPresent
 
 service:
@@ -43,7 +44,7 @@ autoscaling:
 config:
   aspnetcoreEnvironment: "Production"
   rabbitmq:
-    hostName: "rabbitmq"
+    hostName: "rabbitmq-rabbitmq-custom"
     port: "5672"
     videoProcessingQueueName: "processamento_de_videos"
     videoUploadedQueueName: "video_uploaded"
@@ -57,7 +58,7 @@ config:
   authService:
     timeoutSeconds: "30"
   postgres:
-    host: "postgres-host"
+    host: "psql-kutcut-postech.postgres.database.azure.com"
     db: "kutcut"
     port: "5432"
 

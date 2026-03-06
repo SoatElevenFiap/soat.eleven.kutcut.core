@@ -3,6 +3,7 @@ apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: {{ .Release.Name }}
+  namespace: kutcut
   labels:
     app: {{ .Release.Name }}
   {{- with .Values.ingress.annotations }}

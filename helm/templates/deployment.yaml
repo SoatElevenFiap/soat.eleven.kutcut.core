@@ -2,6 +2,7 @@
 kind: Deployment
 metadata:
   name: {{ .Release.Name }}
+  namespace: kutcut
   labels:
     app: {{ .Release.Name }}
 spec:
@@ -24,7 +25,7 @@ spec:
         - name: acr-secret
       containers:
         - name: {{ .Release.Name }}
-          image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default "latest" }}" 
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           ports:
             - name: http
@@ -42,15 +43,13 @@ spec:
               readOnly: true
             {{- end }}
           livenessProbe:
-            httpGet:
-              path: /health
+            tcpSocket:
               port: 8080
             initialDelaySeconds: 30
             periodSeconds: 15
             failureThreshold: 3
           readinessProbe:
-            httpGet:
-              path: /health
+            tcpSocket:
               port: 8080
             initialDelaySeconds: 15
             periodSeconds: 10

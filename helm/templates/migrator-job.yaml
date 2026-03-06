@@ -2,7 +2,7 @@ apiVersion: batch/v1
 kind: Job
 metadata:
   name: migrator-kutcut-{{ now | date "20060102-150405" }}
-  namespace: {{ .Release.Namespace }}
+  namespace: kutcut
   labels:
     app: migrator-kutcut
     release: {{ .Release.Name }}
@@ -14,44 +14,54 @@ spec:
       labels:
         app: migrator-kutcut
         release: {{ .Release.Name }}
+        {{- if .Values.keyVault.enabled }}
+        azure.workload.identity/use: "true"
+        {{- end }}
     spec:
+      serviceAccountName: {{ .Release.Name }}
       restartPolicy: OnFailure
       imagePullSecrets: 
         - name: acr-secret
       initContainers:
         - name: wait-for-db
           image: busybox:1.36
-          command: ['sh', '-c', 'until nc -z {{ .Values.postgres.host }} 5432; do echo waiting for db; sleep 2; done;']
+          command: ['sh', '-c', 'until nc -z {{ .Values.config.postgres.host }} 5432; do echo waiting for db; sleep 2; done;']
       containers:
         - name: migrator-kutcut
-          image: "{{ .Values.image.migratorRepository }}:{{ .Values.image.tag }}"
+          image: "{{ .Values.image.migratorRepository | default .Values.image.repository }}:{{ .Values.image.migratorTag | default .Values.image.tag | default "latest" }}"
           imagePullPolicy: IfNotPresent
           env:
             - name: POSTGRES_HOST
               valueFrom:
                 configMapKeyRef:
-                  name: kutcut-config
+                  name: {{ .Release.Name }}-config
                   key: POSTGRES_HOST
             - name: POSTGRES_DB_kutcut
               valueFrom:
                 configMapKeyRef:
-                  name: kutcut-config
-                  key: POSTGRES_DB_kutcut
+                  name: {{ .Release.Name }}-config
+                  key: POSTGRES_DB
             - name: POSTGRES_PORT
               valueFrom:
                 configMapKeyRef:
-                  name: kutcut-config
+                  name: {{ .Release.Name }}-config
                   key: POSTGRES_PORT
             - name: POSTGRES_USER
               valueFrom:
                 secretKeyRef:
-                  name: db-credentials-kutcut
+                  name: {{ .Release.Name }}-secret
                   key: POSTGRES_USER
             - name: POSTGRES_PASSWORD
               valueFrom:
                 secretKeyRef:
-                  name: db-credentials-kutcut
+                  name: {{ .Release.Name }}-secret
                   key: POSTGRES_PASSWORD
+          volumeMounts:
+            {{- if .Values.keyVault.enabled }}
+            - name: secrets-store-inline
+              mountPath: "/mnt/secrets-store"
+              readOnly: true
+            {{- end }}
           command:
             - sh
             - -c
@@ -69,4 +79,12 @@ spec:
                 --connection "Host=$POSTGRES_HOST;Port=$POSTGRES_PORT;Database=$POSTGRES_DB_kutcut;Username=$POSTGRES_USER;Password=$POSTGRES_PASSWORD;SslMode=Require;TrustServerCertificate=true" \
                 --project soat.eleven.kutcut.core/soat.eleven.kutcut.infra/soat.eleven.kutcut.infra.csproj \
                 --startup-project soat.eleven.kutcut.core/soat.eleven.kutcut.core/soat.eleven.kutcut.core.api.csproj             
-            
+      volumes:
+        {{- if .Values.keyVault.enabled }}
+        - name: secrets-store-inline
+          csi:
+            driver: secrets-store.csi.k8s.io
+            readOnly: true
+            volumeAttributes:
+              secretProviderClass: {{ .Release.Name }}-kv
+        {{- end }}

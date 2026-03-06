@@ -20,6 +20,13 @@ RUN dotnet build "soat.eleven.kutcut.core.api.csproj" -c Release -o /app/build
 FROM build AS publish
 RUN dotnet publish "soat.eleven.kutcut.core.api.csproj" -c Release -o /app/publish /p:UseAppHost=false
 
+# Stage for migrations
+FROM build AS migrator
+RUN dotnet tool install --global dotnet-ef --version 8.*
+ENV PATH="/root/.dotnet/tools:${PATH}"
+WORKDIR /src
+
+# Base image for production
 FROM base AS final
 WORKDIR /app
 COPY --from=publish /app/publish .

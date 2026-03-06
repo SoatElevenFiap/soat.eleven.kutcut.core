@@ -2,6 +2,7 @@
 kind: ConfigMap
 metadata:
   name: {{ .Release.Name }}-config
+  namespace: kutcut
   labels:
     app: {{ .Release.Name }}
 data:
