@@ -96,6 +96,9 @@ jobs:
             --set secret.postgresPassword="${{ secrets.POSTGRES_PASSWORD }}" \
             --set secret.postgresConnectionString="Host=psql-kutcut-postech.postgres.database.azure.com;Database=kutcut;Username=${{ secrets.POSTGRES_USER }};Password=${{ secrets.POSTGRES_PASSWORD }};Port=5432" \
             --set keyVault.enabled=true \
+            --set keyVault.name="${{ secrets.KV_SUFFIX }}"
+            --set keyVault.clientId="${{ secrets.KV_IDENTITY_CLIENT_ID }}" \
+            --set keyVault.tenantId="${{ secrets.AZURE_TENANT_ID_KAUAN }}"
             --show-only templates/migrator-job.yaml \
             --show-only templates/configmap.yaml \
             --show-only templates/serviceaccount.yaml \
@@ -115,7 +118,7 @@ jobs:
             --set image.repository=$REGISTRY/$APP_IMAGE_NAME \
             --set image.tag=${{ github.sha }} \
             --set keyVault.enabled=true \
-            --set keyVault.name="kv-kutcut-${{ secrets.KV_SUFFIX }}" \
+            --set keyVault.name="${{ secrets.KV_SUFFIX }}" \
             --set keyVault.tenantId="${{ secrets.AZURE_TENANT_ID_KAUAN }}" \
             --set keyVault.clientId="${{ secrets.KV_IDENTITY_CLIENT_ID }}" \
             --atomic
