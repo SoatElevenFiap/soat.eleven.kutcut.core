@@ -84,6 +84,6 @@ keyVault:
 
 migrator:
   enabled: true
-  repository: acrkutcutpostech.azurecr.io/kutcut/migrator-kutcut
-  tag: latest
-  pullPolicy: Always
+  image:
+    migratorRepository: acrkutcutpostech.azurecr.io/kutcut/migrator-kutcut 
+    migratorTag: latest
