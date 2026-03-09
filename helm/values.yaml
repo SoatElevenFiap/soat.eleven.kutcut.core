@@ -77,7 +77,13 @@ secret:
 
 # Key Vault Integration (Workload Identity)
 keyVault:
-  enabled: false
+  enabled: true
   name: ""
   tenantId: ""
   clientId: "" # Managed Identity Client ID
+
+migrator:
+  enabled: true
+  repository: acrkutcutpostech.azurecr.io/kutcut/migrator-kutcut
+  tag: latest
+  pullPolicy: Always

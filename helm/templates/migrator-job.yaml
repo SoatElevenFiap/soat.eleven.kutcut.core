@@ -66,15 +66,6 @@ spec:
             - sh
             - -c
             - |
-              echo "=== DEBUG: Variáveis de conexão ==="
-              echo "POSTGRES_HOST: $POSTGRES_HOST"
-              echo "POSTGRES_PORT: $POSTGRES_PORT"
-              echo "POSTGRES_DB_kutcut: $POSTGRES_DB_kutcut"
-              echo "POSTGRES_USER: $POSTGRES_USER"
-              echo "=== Connection String (mascarada) ==="
-              echo "Host=$POSTGRES_HOST;Port=$POSTGRES_PORT;Database=$POSTGRES_DB_kutcut;Username=$POSTGRES_USER;Password=[MASKED];SslMode=Require;TrustServerCertificate=true"
-              echo "=== Iniciando Migration ==="
-              # Ajustado para os novos caminhos do projeto
               dotnet ef database update \
                 --connection "Host=$POSTGRES_HOST;Port=$POSTGRES_PORT;Database=$POSTGRES_DB_kutcut;Username=$POSTGRES_USER;Password=$POSTGRES_PASSWORD;SslMode=Require;TrustServerCertificate=true" \
                 --project soat.eleven.kutcut.core/soat.eleven.kutcut.infra/soat.eleven.kutcut.infra.csproj \
