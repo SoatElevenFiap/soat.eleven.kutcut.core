@@ -156,6 +156,25 @@ namespace soat.eleven.kutcut.core.api.Controllers.V1
             return File(result.Value, "application/zip", $"{id}.zip");
         }
 
+        /// <summary>
+        /// Exclusão de um vídeo por ID.
+        /// </summary>
+        [HttpDelete("{id:guid}")]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status404NotFound)]
+        public async Task<IActionResult> Delete(Guid id)
+        {
+            var result = await _videoService.DeleteAsync(id);
+
+            if (result.IsFailed)
+                return NotFound(new ErrorResponse(
+                    "Não encontrado",
+                    StatusCodes.Status404NotFound,
+                    result.Errors.Select(e => e.Message)));
+
+            return NoContent();
+        }
+
         private static VideoResponse MapToResponse(VideoResult video) =>
             new(video.Id,
                 video.Title,

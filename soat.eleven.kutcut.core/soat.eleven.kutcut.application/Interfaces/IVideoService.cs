@@ -14,5 +14,6 @@ namespace soat.eleven.kutcut.application.Interfaces
         Task<Result<VideoResult>> UpdateTitleAsync(Guid id, string? newTitle);
         Task<Result<VideoResult>> UpdateStatusAsync(Guid id, StatusEnum newStatus);
         Task<Result<Stream>> DownloadThumbnailsAsync(Guid id);
+        Task<Result> DeleteAsync(Guid id);
     }
 }

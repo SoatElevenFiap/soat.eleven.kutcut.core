@@ -198,6 +198,27 @@ namespace soat.eleven.kutcut.application.Services
             return Result.Ok(stream);
         }
 
+        public async Task<Result> DeleteAsync(Guid id)
+        {
+            EnsureAuthenticated();
+
+            var model = await _repository.GetByIdAsync(id);
+            if (model is null)
+                return Result.Fail("Vídeo não encontrado.");
+
+            if (model.UserId != _userContext.UserId)
+                throw new ForbiddenAccessException();
+
+            await _fileStorage.DeleteVideoAsync(model.UserId, model.Id, model.Filename);
+            await _repository.DeleteAsync(model);
+
+            _logger.LogInformation(
+                "Vídeo excluído com sucesso. VideoId: {VideoId}, UserId: {UserId}",
+                id, model.UserId);
+
+            return Result.Ok();
+        }
+
         private static VideoResult MapToResult(VideoModel model)
         {
             var domainStatus = (StatusEnum)(int)(model.Status ?? InfraStatusEnum.Pendente);
