@@ -28,7 +28,7 @@ spec:
           command: ['sh', '-c', 'until nc -z {{ .Values.config.postgres.host }} 5432; do echo waiting for db; sleep 2; done;']
       containers:
         - name: migrator-kutcut
-          image: "{{ .Values.image.migratorRepository | default .Values.image.repository }}:{{ .Values.image.migratorTag | default .Values.image.tag | default "latest" }}"
+          image: "{{ .Values.migrator.image.repository }}:{{ .Values.migrator.image.tag }}"
           imagePullPolicy: IfNotPresent
           env:
             - name: POSTGRES_HOST

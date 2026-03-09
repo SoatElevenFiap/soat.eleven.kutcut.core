@@ -85,5 +85,5 @@ keyVault:
 migrator:
   enabled: true
   image:
-    migratorRepository: acrkutcutpostech.azurecr.io/kutcut/migrator-kutcut 
-    migratorTag: latest
+    repository: acrkutcutpostech.azurecr.io/kutcut/migrator-kutcut
+    tag: latest-migrator
