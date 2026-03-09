@@ -95,6 +95,7 @@ jobs:
             --set secret.postgresUser="${{ secrets.POSTGRES_USER }}" \
             --set secret.postgresPassword="${{ secrets.POSTGRES_PASSWORD }}" \
             --set secret.postgresConnectionString="Host=psql-kutcut-postech.postgres.database.azure.com;Database=kutcut;Username=${{ secrets.POSTGRES_USER }};Password=${{ secrets.POSTGRES_PASSWORD }};Port=5432" \
+            --set keyVault.enabled=true \
             --show-only templates/migrator-job.yaml \
             --show-only templates/configmap.yaml \
             --show-only templates/serviceaccount.yaml \
