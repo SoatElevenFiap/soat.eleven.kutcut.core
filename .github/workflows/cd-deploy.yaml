@@ -98,7 +98,7 @@ jobs:
             --set keyVault.enabled=true \
             --set keyVault.name="${{ secrets.KV_SUFFIX }}"
             --set keyVault.clientId="${{ secrets.KV_IDENTITY_CLIENT_ID }}" \
-            --set keyVault.tenantId="${{ secrets.AZURE_TENANT_ID_KAUAN }}"
+            --set keyVault.tenantId="${{ secrets.AZURE_TENANT_ID_KAUAN }}" \
             --show-only templates/migrator-job.yaml \
             --show-only templates/configmap.yaml \
             --show-only templates/serviceaccount.yaml \
