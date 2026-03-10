@@ -100,7 +100,7 @@ jobs:
             --set keyVault.tenantId="${{ secrets.AZURE_TENANT_ID_KAUAN }}" \
             --show-only templates/migrator-job.yaml \
             --show-only templates/configmap.yaml \
-            --show-only templates/serviceaccount.yaml \
+            --show-only templates/serviceaccount-migrator.yaml \
             --show-only templates/secret.yaml \
             --show-only templates/secretproviderclass.yaml | kubectl apply -f -
           
