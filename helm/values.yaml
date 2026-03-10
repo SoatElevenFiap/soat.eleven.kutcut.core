@@ -78,10 +78,10 @@ secret:
 # Key Vault Integration (Workload Identity)
 keyVault:
   enabled: true
-  name: ""
-  tenantId: ""
-  clientId: "" # Managed Identity Client ID
-
+  name: "kv-kutcut-0655d655"
+  tenantId: "09d5a929-8c74-463b-bf47-678505201104"
+  clientId: "a0ba8d0d-8fe5-476f-97f6-aabb7ebff91d" # Managed Identity Client ID
+  
 migrator:
   enabled: true
   image:
