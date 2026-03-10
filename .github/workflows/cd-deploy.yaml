@@ -89,13 +89,6 @@ jobs:
           echo "🚀 Renderizando e aplicando Job de Migração..."
           helm template migrator-job $CHART_PATH \
             --namespace $NAMESPACE \
-            --set config.postgres.host="psql-kutcut-postech.postgres.database.azure.com" \
-            --set config.postgres.db="kutcut" \
-            --set secret.postgresUser="${{ secrets.POSTGRES_USER }}" \
-            --set secret.postgresPassword="${{ secrets.POSTGRES_PASSWORD }}" \
-            --set secret.postgresConnectionString="Host=psql-kutcut-postech.postgres.database.azure.com;Database=kutcut;Username=${{ secrets.POSTGRES_USER }};Password=${{ secrets.POSTGRES_PASSWORD }};Port=5432" \
-            --set keyVault.enabled=true \
-            --set keyVault.name="kv-kutcut-0655d655" \
             --set keyVault.clientId="${{ secrets.AZURE_CLIENT_ID_KAUAN }}" \
             --set keyVault.tenantId="${{ secrets.AZURE_TENANT_ID_KAUAN }}" \
             --show-only templates/migrator-job.yaml \
@@ -116,13 +109,6 @@ jobs:
           echo "🚀 Rodando Helm Upgrade (Migração + API)..."
           helm upgrade --install $RELEASE_NAME $CHART_PATH \
             --namespace $NAMESPACE \
-            --set image.repository="$REGISTRY/$APP_IMAGE_NAME" \
-            --set image.tag="latest" \
-            --set migrator.enabled=true \
-            --set keyVault.enabled=true \
-            --set keyVault.name="kv-kutcut-0655d655" \
             --set keyVault.clientId="${{ secrets.AZURE_CLIENT_ID_KAUAN }}" \
             --set keyVault.tenantId="${{ secrets.AZURE_TENANT_ID_KAUAN }}" \
-            --set secret.postgresUser="${{ secrets.POSTGRES_USER }}" \
-            --set secret.postgresPassword="${{ secrets.POSTGRES_PASSWORD }}" \
             --wait --timeout 5m
