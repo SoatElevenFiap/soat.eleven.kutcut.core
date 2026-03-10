@@ -18,7 +18,7 @@ spec:
         azure.workload.identity/use: "true"
         {{- end }}
     spec:
-      serviceAccountName: {{ .Release.Name }}
+      serviceAccountName: migrator-job
       restartPolicy: OnFailure
       imagePullSecrets: 
         - name: acr-secret
