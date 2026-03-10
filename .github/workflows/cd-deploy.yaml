@@ -85,9 +85,10 @@ jobs:
         run: |
           echo "🧹 Limpando jobs anteriores..."
           kubectl delete jobs -l app=kutcut-migrations -n $NAMESPACE --ignore-not-found=true
+          kubectl delete jobs -l app=migrator-kutcut -n $NAMESPACE --ignore-not-found=true
           
           echo "🚀 Renderizando e aplicando Job de Migração..."
-          helm template migrator-job $CHART_PATH \
+          helm template $RELEASE_NAME $CHART_PATH \
             --namespace $NAMESPACE \
             --set keyVault.clientId="${{ secrets.AZURE_CLIENT_ID_KAUAN }}" \
             --set keyVault.tenantId="${{ secrets.AZURE_TENANT_ID_KAUAN }}" \
@@ -102,9 +103,8 @@ jobs:
       - name: Deploy Application with Migration
         run: |
           echo "🧹 Limpando resquícios para evitar conflitos de posse..."
-          # Deleta o Job e SA
+          # Deleta o Job (mantém o SA para reutilizar na próxima vez)
           kubectl delete job -l app=migrator-kutcut -n $NAMESPACE --ignore-not-found=true
-          kubectl delete sa migrator-job -n $NAMESPACE --ignore-not-found=true
           
           # DESTREVA O HELM: Deleta segredos de release que não terminaram com sucesso
           echo "🔓 Destravando o Helm..."
