@@ -102,13 +102,18 @@ jobs:
       - name: Deploy Application with Migration
         run: |
           echo "🧹 Limpando resquícios para evitar conflitos de posse..."
-          # Deleta o Job anterior e a SA órfã para o Helm assumir do zero
+          # Deleta o Job e SA
           kubectl delete job -l app=migrator-kutcut -n $NAMESPACE --ignore-not-found=true
           kubectl delete sa migrator-job -n $NAMESPACE --ignore-not-found=true
+          
+          # DESTREVA O HELM: Deleta segredos de release que não terminaram com sucesso
+          echo "🔓 Destravando o Helm..."
+          kubectl delete secret -l owner=helm,name=$RELEASE_NAME,status=pending-install -n $NAMESPACE --ignore-not-found=true
+          kubectl delete secret -l owner=helm,name=$RELEASE_NAME,status=pending-upgrade -n $NAMESPACE --ignore-not-found=true
           
           echo "🚀 Rodando Helm Upgrade (Migração + API)..."
           helm upgrade --install $RELEASE_NAME $CHART_PATH \
             --namespace $NAMESPACE \
             --set keyVault.clientId="${{ secrets.AZURE_CLIENT_ID_KAUAN }}" \
             --set keyVault.tenantId="${{ secrets.AZURE_TENANT_ID_KAUAN }}" \
-            --wait --timeout 5m
+            --atomic --cleanup-on-fail --wait --timeout 5m
