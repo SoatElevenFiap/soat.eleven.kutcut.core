@@ -14,9 +14,7 @@ spec:
       labels:
         app: migrator-kutcut
         release: {{ .Release.Name }}
-        {{- if .Values.keyVault.enabled }}
         azure.workload.identity/use: "true"
-        {{- end }}
     spec:
       serviceAccountName: migrator-job
       restartPolicy: OnFailure
@@ -57,11 +55,9 @@ spec:
                   name: {{ .Release.Name }}-secret
                   key: POSTGRES_PASSWORD
           volumeMounts:
-            {{- if .Values.keyVault.enabled }}
             - name: secrets-store-inline
               mountPath: "/mnt/secrets-store"
               readOnly: true
-            {{- end }}
           command:
             - sh
             - -c
@@ -71,11 +67,9 @@ spec:
                 --project soat.eleven.kutcut.core/soat.eleven.kutcut.infra/soat.eleven.kutcut.infra.csproj \
                 --startup-project soat.eleven.kutcut.core/soat.eleven.kutcut.core/soat.eleven.kutcut.core.api.csproj             
       volumes:
-        {{- if .Values.keyVault.enabled }}
         - name: secrets-store-inline
           csi:
             driver: secrets-store.csi.k8s.io
             readOnly: true
             volumeAttributes:
               secretProviderClass: {{ .Release.Name }}-kv
-        {{- end }}
