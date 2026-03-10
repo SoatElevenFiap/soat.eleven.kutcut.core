@@ -9,7 +9,7 @@
 replicaCount: 1
 
 image:
-  repository: acrkutcutpostech.azurecr.io/kutcut-api
+  repository: acrkutcutpostech.azurecr.io/kutcut/api
   tag: latest
   migratorTag: latest-migrator
   pullPolicy: IfNotPresent
