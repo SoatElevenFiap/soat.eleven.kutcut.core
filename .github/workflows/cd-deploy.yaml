@@ -106,18 +106,23 @@ jobs:
           
           echo "⏳ Aguardando migração finalizar..."
           kubectl wait --for=condition=complete job -l app=migrator-kutcut -n $NAMESPACE --timeout=300s
-          
-      # 8. Deploy da Aplicação (Com rollback automático)
-      - name: Deploy Application via Helm
+        
+      - name: Deploy Application with Migration
         run: |
-          echo "🚀 Deploy Atômico com Helm em $NAMESPACE..."
+          echo "🧹 Limpando resquícios para evitar conflitos de posse..."
+          # Deleta o Job anterior e a SA órfã para o Helm assumir do zero
+          kubectl delete job -l app=migrator-kutcut -n $NAMESPACE --ignore-not-found=true
+          kubectl delete sa migrator-job -n $NAMESPACE --ignore-not-found=true
+          
+          echo "🚀 Rodando Helm Upgrade (Migração + API)..."
           helm upgrade --install $RELEASE_NAME $CHART_PATH \
             --namespace $NAMESPACE \
-            --create-namespace \
-            --set image.repository=$REGISTRY/$APP_IMAGE_NAME \
-            --set image.tag=${{ github.sha }} \
+            --set image.repository="$REGISTRY/$APP_IMAGE_NAME" \
+            --set image.tag="latest" \
+            --set migrator.enabled=true \
             --set keyVault.enabled=true \
-            --set keyVault.name="${{ secrets.KV_SUFFIX }}" \
+            --set keyVault.clientId="${{ secrets.AZURE_CLIENT_ID_KAUAN }}" \
             --set keyVault.tenantId="${{ secrets.AZURE_TENANT_ID_KAUAN }}" \
-            --set keyVault.clientId="${{ secrets.KV_IDENTITY_CLIENT_ID }}" \
-            --atomic
+            --set secret.postgresUser="${{ secrets.POSTGRES_USER }}" \
+            --set secret.postgresPassword="${{ secrets.POSTGRES_PASSWORD }}" \
+            --wait --timeout 5m
