@@ -9,8 +9,9 @@
 replicaCount: 1
 
 image:
-  repository: <ACR_NAME>.azurecr.io/kutcut-api
-  tag: "latest"
+  repository: acrkutcutpostech.azurecr.io/kutcut/api
+  tag: latest
+  migratorTag: latest-migrator
   pullPolicy: IfNotPresent
 
 service:
@@ -43,7 +44,7 @@ autoscaling:
 config:
   aspnetcoreEnvironment: "Production"
   rabbitmq:
-    hostName: "rabbitmq"
+    hostName: "rabbitmq-rabbitmq-custom"
     port: "5672"
     videoProcessingQueueName: "processamento_de_videos"
     videoUploadedQueueName: "video_uploaded"
@@ -56,6 +57,10 @@ config:
     containerName: "kutcut"
   authService:
     timeoutSeconds: "30"
+  postgres:
+    host: "psql-kutcut-postech.postgres.database.azure.com"
+    db: "kutcut"
+    port: "5432"
 
 # Sensitive configuration (Secret) — leave empty, set at deploy time
 secret:
@@ -67,3 +72,21 @@ secret:
   emailPassword: ""
   azureBlobConnectionString: ""
   authServiceBaseUrl: ""
+  postgresUser: ""
+  postgresPassword: ""
+
+namespace:
+  name: "kutcut"
+
+# Key Vault Integration (Workload Identity)
+keyVault:
+  enabled: true
+  name: "kv-kutcut-0655d655"
+  tenantId: "11dbbfe2-89b8-4549-be10-cec364e59551"
+  clientId: "a0ba8d0d-8fe5-476f-97f6-aabb7ebff91d" # Managed Identity Client ID
+
+migrator:
+  enabled: true
+  image:
+    repository: acrkutcutpostech.azurecr.io/kutcut/migrator-kutcut
+    tag: latest-migrator
